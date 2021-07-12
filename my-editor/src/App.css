@@ -1,0 +1,34 @@
+.toolBar {
+  border: 1px solid #c9d8db;
+  border-bottom: 1px solid #EEE;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.toolItem {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.toolItem:hover {
+  background-color:#c9d8db;
+}
+
+.toolBarIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.editorContainer {
+  
+}
+
+.editorContainer:focus {
+  outline: none;
+}
