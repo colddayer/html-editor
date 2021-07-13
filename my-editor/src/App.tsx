@@ -1,49 +1,76 @@
-import React, { useRef, useEffect } from 'react'
-import './App.css'
-import { toolSchema } from './constant/toolbar'
+import React, { useState, useEffect } from 'react'
+import { Editor } from '@milkdown/core'
+import { ReactEditor, useEditor } from '@milkdown/react'
+import { commonmark } from '@milkdown/preset-commonmark'
+import { history } from '@milkdown/plugin-history'
+import { prism } from '@milkdown/plugin-prism'
+import { tooltip } from '@milkdown/plugin-tooltip'
+import { table } from '@milkdown/plugin-table'
+import { slash } from '@milkdown/plugin-slash'
+import { pasteImage } from './plugin/pasteImg'
+import defaultMd from './constant/default.md'
 
-const afterRemove = () => {
-  console.log('remove listener!')
+import '@milkdown/theme-nord/lib/theme.css'
+import '@milkdown/plugin-table/lib/style.css'
+import '@milkdown/plugin-tooltip/lib/style.css'
+import '@milkdown/plugin-slash/lib/style.css'
+
+type Props = {
+  content?: string
+  readOnly?: boolean
+  onChange?: (getMarkdown: () => string) => void
 }
 
-function App() {
-  const tools = Object.values(toolSchema)
-  const $editor = useRef<any>(null)
-  const $activeElement = useRef<any>(null)
-  
+// const listenerCalllback = (e: ClipboardEvent) => {
+//   var clipboardData = e.clipboardData!
+
+//   if (clipboardData.items) {
+//     for (let i = 0; i < clipboardData.items.length; i++) {
+//       if (clipboardData.items[i].kind === 'file') {
+//         console.log(clipboardData.items[i], clipboardData.items[i].getAsFile(), 123)
+//       }
+//     }
+//   }
+// }
+
+const MilkdownEditor: React.FC<Props> = ({ content, readOnly, onChange }) => {
+  const [markdown, setMarkdown] = useState(content || '')
+  const editor = useEditor(
+    (root) => {
+      const editor = new Editor({
+        root,
+        defaultValue: markdown,
+        editable: () => !readOnly,
+        listener: {
+          markdown: onChange ? [onChange] : [],
+        },
+      })
+        .use(commonmark)
+        .use(history)
+        .use(table())
+        .use(prism)
+        .use(tooltip)
+        .use(pasteImage)
+
+      if (!readOnly) {
+        editor.use(slash)
+      }
+      return editor
+    },
+    [readOnly, markdown]
+  )
 
   useEffect(() => {
-    if ($editor.current) {
-      $editor.current.removeEventListener('click', afterRemove)
-      $editor.current.addEventListener('click', (e: any) => {
-        $activeElement.current = e.target
-      })
-    }
-  }, [$editor.current])
+    fetch(defaultMd)
+      .then((res) => res.text())
+      .then((text) => setMarkdown(text))
+  }, [content])
 
   return (
     <div>
-      <div className='toolBar'>
-        {tools.map((item, index) => (
-          <div
-            onClick={(e) => item.onClick(e, $activeElement.current)}
-            className='toolItem'
-            key={index}
-          >
-            <img src={item.icon} className='toolBarIcon' alt={index + ''} />
-          </div>
-        ))}
-      </div>
-      <div contentEditable className='editorContainer' id='editorContainer' ref={$editor}>
-        <div>段落1</div>
-        <div>段落2</div>
-        <div>段落3</div>
-        <div>段落4</div>
-        <div>段落5</div>
-        <div>段落6</div>
-      </div>
+      <ReactEditor editor={editor} />
     </div>
   )
 }
 
-export default App
+export default MilkdownEditor
