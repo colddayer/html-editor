@@ -19,6 +19,7 @@ export const createImgTag = (view: EditorView, url: string = '') => {
   const { selection, tr, schema } = state
   const { $head } = selection
   const { image } = schema.nodes
+
   dispatch(
     tr.replaceRangeWith(
       $head.pos,
@@ -44,7 +45,7 @@ export const UploadImg = async (file: File) => {
     withCredentials: false,
     proxy: {
       host: 'http://localhost',
-      port: 8080
-    }
+      port: 8080,
+    },
   })
 }

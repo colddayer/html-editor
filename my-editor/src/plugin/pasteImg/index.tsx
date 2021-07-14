@@ -2,7 +2,7 @@ import { createProsemirrorPlugin } from '@milkdown/core'
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { getImgFile, createImgTag, UploadImg } from './util'
 
-export const key = 'MILKDOWN_PLUGIN_PASTEIMG'
+export const key = 'MILKDOWN_PLUGIN_PASTE_IMG'
 
 const pasteImageUploadPlugin = () =>
   new Plugin({

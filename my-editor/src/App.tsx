@@ -8,6 +8,7 @@ import { tooltip } from '@milkdown/plugin-tooltip'
 import { table } from '@milkdown/plugin-table'
 import { slash } from '@milkdown/plugin-slash'
 import { pasteImage } from './plugin/pasteImg'
+import { pasteLink } from './plugin/pasteLink'
 import defaultMd from './constant/default.md'
 
 import '@milkdown/theme-nord/lib/theme.css'
@@ -20,18 +21,6 @@ type Props = {
   readOnly?: boolean
   onChange?: (getMarkdown: () => string) => void
 }
-
-// const listenerCalllback = (e: ClipboardEvent) => {
-//   var clipboardData = e.clipboardData!
-
-//   if (clipboardData.items) {
-//     for (let i = 0; i < clipboardData.items.length; i++) {
-//       if (clipboardData.items[i].kind === 'file') {
-//         console.log(clipboardData.items[i], clipboardData.items[i].getAsFile(), 123)
-//       }
-//     }
-//   }
-// }
 
 const MilkdownEditor: React.FC<Props> = ({ content, readOnly, onChange }) => {
   const [markdown, setMarkdown] = useState(content || '')
@@ -51,6 +40,7 @@ const MilkdownEditor: React.FC<Props> = ({ content, readOnly, onChange }) => {
         .use(prism)
         .use(tooltip)
         .use(pasteImage)
+        .use(pasteLink)
 
       if (!readOnly) {
         editor.use(slash)
