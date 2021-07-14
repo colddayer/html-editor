@@ -1,0 +1,33 @@
+.tooltip-input-img {
+  height: auto;
+  width: 330px;
+}
+
+.tooltip-input-img .input-img {
+  padding-left: 10px;
+  font-size: 14px;
+}
+
+.input-row {
+  padding: 8px 0;
+  display: flex;
+  border-bottom: 1px solid #D8DEE9;
+}
+
+.input-row:last-child {
+  border: none;
+}
+
+.input-title {
+  width: 50px;
+  text-align: center;
+}
+
+.tooltip-input-img .input-button {
+  background-color: #F0F4F7;
+  padding: 0 15px;
+}
+
+.input-button:hover{
+  opacity: 0.8 !important;
+}
