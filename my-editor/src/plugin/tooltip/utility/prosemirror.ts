@@ -86,8 +86,19 @@ export const modifyLink =
     const mark = node.marks.find(({ type }) => type === link)
     if (!mark) return () => false
 
-    const inputEl = target.parentNode?.firstChild
+    const parentNode = target.parentNode
+
+    if (!(parentNode instanceof HTMLDivElement)) return () => false
+
+    const inputEl = parentNode.firstChild
     if (!(inputEl instanceof HTMLInputElement)) return () => false
+
+    parentNode.classList.add('hide')
+
+    if (target.innerHTML === 'GO') {
+      inputEl.value && window.open(inputEl.value)
+      return () => true
+    }
 
     return modifyLinkCommand(mark, marks.link, inputEl.value)
   }
@@ -120,7 +131,7 @@ export const modifyImage =
       tr.setNodeMarkup(node.pos, undefined, {
         ...node.node.attrs,
         src: (inputEls[1] as HTMLInputElement).value,
-        alt: (inputEls[0] as HTMLInputElement).value
+        alt: (inputEls[0] as HTMLInputElement).value,
       })
       dispatch(tr.scrollIntoView())
 

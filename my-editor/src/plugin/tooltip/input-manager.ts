@@ -1,5 +1,5 @@
 import type { EditorView } from 'prosemirror-view'
-import type { Event2Command, InputMap } from './item'
+import { Event2Command, InputMap, InputAction } from './item'
 import { inputImageHTML } from './utility'
 
 export class InputManager {
@@ -8,6 +8,7 @@ export class InputManager {
   #activeInput: HTMLDivElement
   #inputMap: InputMap
   #inputCommand?: Event2Command
+  #isClickLink: boolean = false
 
   constructor(inputMap: InputMap, private view: EditorView) {
     this.#inputMap = inputMap
@@ -17,19 +18,23 @@ export class InputManager {
 
     this.#input.addEventListener('mousedown', this.listener)
     this.#imgInput.addEventListener('mousedown', this.listener)
+    document.addEventListener('mousedown', this.onClick)
   }
 
   destroy() {
     this.#input.removeEventListener('mousedown', this.listener)
     this.#imgInput.removeEventListener('mousedown', this.listener)
+    document.removeEventListener('mousedown', this.onClick)
     this.#input.remove()
     this.#imgInput.remove()
   }
 
   hide() {
-    this.#input.classList.add('hide')
+    if (!this.#isClickLink) {
+      this.#input.classList.add('hide')
+      this.#inputCommand = undefined
+    }
     this.#imgInput.classList.add('hide')
-    this.#inputCommand = undefined
   }
 
   update(view: EditorView) {
@@ -64,9 +69,12 @@ export class InputManager {
     div.className = 'tooltip-input'
     const input = document.createElement('input')
     div.appendChild(input)
-    const button = document.createElement('button')
-    button.textContent = 'APPLY'
-    div.appendChild(button)
+    const button1 = document.createElement('button')
+    button1.textContent = 'MODIFY'
+    const button2 = document.createElement('button')
+    button2.textContent = 'GO'
+    div.appendChild(button1)
+    div.appendChild(button2)
     this.view.dom.parentNode?.appendChild(div)
 
     return div
@@ -86,9 +94,11 @@ export class InputManager {
       return input.display(view)
     })
     if (!target) {
-      this.#activeInput.classList.add('hide')
       return false
     }
+
+    this.#imgInput.classList.add('hide')
+    this.#input.classList.add('hide')
 
     this.#activeInput = target.placeholder.includes('Image') ? this.#imgInput : this.#input
 
@@ -102,9 +112,27 @@ export class InputManager {
   private listener = (e: Event) => {
     const { view } = this
     const command = this.#inputCommand
+
     if (!view || !command) return
 
     e.stopPropagation()
     command(e, view)(view.state, view.dispatch)
+  }
+
+  onClick = (e: Event) => {
+    const target = e.target as HTMLElement
+    const clastList = Array.from(target.classList)
+    this.#isClickLink = false
+    if (target instanceof HTMLAnchorElement && clastList.includes('link')) {
+      this.#activeInput = this.#input
+      this.#inputCommand = this.#inputMap[InputAction.ModifyLink].command
+      this.#activeInput.classList.remove('hide')
+      this.#isClickLink = true
+
+      const { firstChild } = this.#activeInput
+      if (!(firstChild instanceof HTMLInputElement)) return
+
+      firstChild.value = target.href
+    }
   }
 }
