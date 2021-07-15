@@ -133,6 +133,7 @@ export class InputManager {
       if (!(firstChild instanceof HTMLInputElement)) return
 
       firstChild.value = target.href
+      this.calcPos(this.view)
     }
   }
 }
