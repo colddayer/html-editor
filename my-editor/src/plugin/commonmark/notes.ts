@@ -12,7 +12,6 @@ import {
   Text,
   Image,
 } from '@milkdown/preset-commonmark'
-import { Link } from './Link/node'
 
 export const nodes = [
   new Doc(),
@@ -26,6 +25,5 @@ export const nodes = [
   new Heading(),
   new Hr(),
   new Text(),
-  new Image(),
-  new Link()
+  new Image()
 ]

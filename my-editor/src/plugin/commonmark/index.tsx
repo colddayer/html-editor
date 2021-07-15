@@ -1,7 +1,6 @@
 import { Image, marks } from '@milkdown/preset-commonmark'
 import myImage from './Image'
 import type { Atom } from '@milkdown/core'
-import myLink from './Link/reactNode'
 import { nodes } from './notes'
 
 type Cls = new (...args: unknown[]) => unknown

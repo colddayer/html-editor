@@ -5,7 +5,7 @@ const Link: React.FC = () => {
   const { node } = useNodeCtx()
 
   return (
-    <a href={node.attrs.href} target='_blank' rel="noreferrer" className='link'>
+    <a href={node.attrs.href} target='_blank' className='link'>
       {node.attrs.href}
     </a>
   )

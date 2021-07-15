@@ -7,21 +7,23 @@ export const pasteAndCreate = (
 ) => {
   const clipboardData = e.clipboardData
   if (clipboardData && clipboardData.items) {
-    for (let i = 0; i < clipboardData.items.length; i++) {
-      if (clipboardData.items[i].type.includes('image')) {
-        uploadImgApi &&
-          uploadImgApi(clipboardData.items[i].getAsFile()).then(
-            ({ url }) => url && createImgTag(view, url)
-          )
-      }
+    const clipboardDataItems = Array.from(clipboardData.items)
+    const imgFile = clipboardDataItems.find((item) => item.type.includes('image'))
+    if (imgFile) {
+      uploadImgApi &&
+        uploadImgApi(imgFile.getAsFile()).then(({ url }) => url && createImgTag(view, url))
+      return
+    }
 
-      if (clipboardData.items[i].kind === 'string') {
-        clipboardData.items[i].getAsString((str) => {
+    for (const item of clipboardDataItems) {
+      if (item.kind === 'string') {
+        item.getAsString((str) => {
           if (/^(http|https):\/\//.test(str)) {
             createLink(view, str)
-          } else {
-            createNormal(view, str)
+            return
           }
+
+          if (!str.includes('<meta')) createNormal(view, str)
         })
       }
     }
@@ -48,10 +50,10 @@ const createImgTag = (view: EditorView, url: string = '') => {
 const createLink = (view: EditorView, url: string) => {
   const { state, dispatch } = view
   const { tr, schema } = state
-  const { tag_a } = schema.nodes
+  const { link } = schema.marks
 
-  const node = schema.text(url, [tag_a.create({ href: url })])
-  dispatch(tr.replaceSelectionWith(node))
+  const node = schema.text(url, [link.create({ href: url })])
+  dispatch(tr.replaceSelectionWith(node, false))
 }
 
 const createNormal = (view: EditorView, text: string) => {
