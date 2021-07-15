@@ -95,10 +95,7 @@ export const modifyLink =
 
     parentNode.classList.add('hide')
 
-    if (target.innerHTML === 'GO') {
-      inputEl.value && window.open(inputEl.value)
-      return () => true
-    }
+    if (target.innerHTML === 'GO' && inputEl.value) window.open(inputEl.value)
 
     return modifyLinkCommand(mark, marks.link, inputEl.value)
   }
