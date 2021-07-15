@@ -1,6 +1,6 @@
 import type { EditorView } from 'prosemirror-view'
 import { Event2Command, InputMap, InputAction } from './item'
-import { inputImageHTML } from './utility'
+import { inputImageHTML, getAnchorElement } from './utility'
 
 export class InputManager {
   #input: HTMLDivElement
@@ -35,6 +35,7 @@ export class InputManager {
       this.#inputCommand = undefined
     }
     this.#imgInput.classList.add('hide')
+    this.calcPos(this.view)
   }
 
   update(view: EditorView) {
@@ -120,10 +121,10 @@ export class InputManager {
   }
 
   onClick = (e: Event) => {
-    const target = e.target as HTMLElement
-    const clastList = Array.from(target.classList)
     this.#isClickLink = false
-    if (target instanceof HTMLAnchorElement && clastList.includes('link')) {
+
+    const anchorElement = getAnchorElement((e as any).path)
+    if (anchorElement) {
       this.#activeInput = this.#input
       this.#inputCommand = this.#inputMap[InputAction.ModifyLink].command
       this.#activeInput.classList.remove('hide')
@@ -131,9 +132,10 @@ export class InputManager {
 
       const { firstChild } = this.#activeInput
       if (!(firstChild instanceof HTMLInputElement)) return
+      if (anchorElement.href === document.location.href) return
 
-      firstChild.value = target.href
-      this.calcPos(this.view)
+
+      firstChild.value = anchorElement.href
     }
   }
 }

@@ -23,3 +23,12 @@ export const inputImageHTML = `
     <button class='input-button'>apply</button>
   </div>
 `
+
+export const getAnchorElement = (path: HTMLElement[]): HTMLAnchorElement | null => {
+  for (const item of path) {
+    if (item instanceof HTMLAnchorElement && item.className?.includes('link')) return item
+    if (item.className?.includes('ProseMirror editor')) return null
+  }
+
+  return null
+}
